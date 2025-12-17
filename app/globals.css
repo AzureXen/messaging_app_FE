@@ -1,6 +1,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+    --main-color-1: #323338;
+    --main-color-2: #2e2f34;
+    --main-color-3: #2c2d32;
+    --main-color-4: #5a69f1;
+
+    --gradient-4: linear-gradient(
+            0deg,
+            rgba(88, 101, 242, 1) 0%,
+            rgba(110, 125, 255, 1) 50%,
+            rgba(88, 101, 242, 1) 100%
+    );
+
+    --gradient-4-2: linear-gradient(
+            0deg,
+            rgba(71, 82, 196, 1) 0%,
+            rgba(88, 101, 242, 1) 50%,
+            rgba(71, 82, 196, 1) 100%
+    );
+
+    --font-color-1: #fff1f7;
+    --font-color-2: #79747d;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,6 +56,8 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+
 
 @media (prefers-color-scheme: dark) {
   html {

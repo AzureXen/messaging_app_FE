@@ -1,0 +1,14 @@
+.mainHeader {
+    width: 100%;
+    height: 1.8rem;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-topleft: 20px;
+    background-color: var(--main-color-3);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainHeader p{
+
+}

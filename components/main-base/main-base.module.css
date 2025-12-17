@@ -1,0 +1,43 @@
+.mainBase{
+    flex:1;
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0;
+}
+.sideBar{
+    width: 18rem;
+    height: auto;
+    background-color: blue;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.conversationDisplay{
+    flex:1;
+}
+
+.userDisplay{
+    box-sizing: border-box;
+    height: 3.7rem;
+    background-color: red;
+    margin: 0.5rem;
+    border-radius: 5px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.sideBarExtend{
+    width: 15rem;
+    height: auto;
+    background-color: red;
+}
+.mainContent{
+    flex: 1;
+    width: auto;
+    height: auto;
+}
