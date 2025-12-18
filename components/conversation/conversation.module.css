@@ -9,3 +9,8 @@
     justify-content: center;
     color: white;
 }
+
+.conversation:hover {
+    background-color: #8c8c4c;
+    cursor: pointer;
+}

@@ -10,7 +10,7 @@ export const useWebSocket = (conversationId) => {
 
     useEffect(() => {
         // 1. Get Token from Storage
-        const token = localStorage.getItem("jwtToken"); // Make sure key matches your login logic!
+        const token = localStorage.getItem("token"); // Make sure key matches your login logic!
 
         if (!token) {
             console.error("❌ No JWT found. Cannot connect.");
@@ -38,6 +38,7 @@ export const useWebSocket = (conversationId) => {
                     if (message.body) {
                         const newMessage = JSON.parse(message.body);
                         // Add new message to the list
+                        console.log("new message arrvied!: ", newMessage);
                         setMessages((prev) => [...prev, newMessage]);
                     }
                 });

@@ -1,84 +1,39 @@
 'use client'
-import React, {useEffect, useState} from 'react'
-import Styles from "./page.module.css"
-import MessageBubble from "@/components/small-components/message-bubble/message-bubble";
-import {createMessage, fetchMessages} from "@/services/messages";
+import React, { useEffect } from 'react'
+import { useConversations } from "@/context/ConversationContext";
+import { useRouter } from "next/navigation";
 
 const Channels = () => {
-
-    const [messages, setMessages] = useState([])
-    const [draftMessage, setDraftMessage] = useState('')
+    const allConversations = useConversations();
+    const router = useRouter();
 
     useEffect(() => {
-        const getMessages = async () => {
-            try{
-                const response = await fetchMessages(1);
-                console.log("channels/page.js: getMessage response: ");
-                console.log(response);
-                setMessages(response.data);
-            }catch(e){
-                console.log("error while getting messages,");
-                console.error(e);
-            }
-        }
-        getMessages();
+        if (allConversations === null) return;
 
-    },[])
-
-    const sendMessage = async () =>{
-        try{
-            console.log("sending message...");
-            await createMessage(1, draftMessage, "TEXT");
-        }catch(e){
-            console.log("services/messages/page: error while sending message: ");
-            console.error(e);
+        if (allConversations.length > 0) {
+            const firstChatId = allConversations[0].id;
+            router.push(`/channels/${firstChatId}`);
         }
+
+
+    }, [allConversations, router]);
+
+    if (allConversations === null) {
+        return <div className="loading-screen">Loading your world...</div>;
     }
 
-    const handleSendMessage = async () => {
-        if (draftMessage.trim() === '') return;
-
-        await sendMessage();
-
-        setDraftMessage('');
-    }
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-        }
-        // Shift+Enter will create a new line (default behavior)
-    }
-
-
-    return (
-        <div className={Styles.channels}>
-            <div className={Styles.header}>
-                epic header
+    if (allConversations.length === 0) {
+        return (
+            <div className="empty-state">
+                <h1>Welcome!</h1>
+                <p>You don't have any conversations yet.</p>
+                <button onClick={() => console.log("Open create modal")}>
+                    Create your first Channel
+                </button>
             </div>
-
-            <div className={Styles.content}>
-                <div className={Styles.messagesBox}>
-                    {messages.map((message, index) => (
-                        <MessageBubble name={message.senderName} content={message.content} datetime={message.createdAt} key={index} />
-                    ))}
-                </div>
-                <div className={Styles.draftBox}>
-                <textarea
-                    value={draftMessage}
-                    onChange={(e) => setDraftMessage(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Type your message here"
-                    className={Styles.messageInput}
-                    rows={1}
-                />
-                </div>
-            </div>
-
-
-        </div>
-    )
+        );
+    }
+    return <div>Redirecting...</div>;
 }
 
 export default Channels
