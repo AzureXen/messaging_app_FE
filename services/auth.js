@@ -8,15 +8,29 @@ export const login = async (credentials) => {
 
 export const getMe = async () => {
     const response = await api.get('/users/profile');
-    // Normalize common API shapes: { data: user } or direct user object
     const normalized = response?.data?.data ?? response?.data ?? response;
     console.log("getMe normalized:", normalized);
     return normalized;
 };
 
 export const register = async (data) => {
-    const response = await api.post('/auth/register', data);
-    return response.data;
+    console.log("registering with data: ", data);
+    try {
+        const response = await api.post('/auth/register', data);
+        console.log("register success:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("full error: ", error);
+        if (error.response) {
+            console.log("Server Error Data:", error.response.data);
+            const springError = error.response.data;
+            throw new Error(springError.message || "Registration failed");
+        } else if (error.request) {
+            throw new Error("No response from server. what.");
+        } else {
+            throw new Error("Unexpected error occurred.");
+        }
+    }
 };
 
 export const logout = () => {

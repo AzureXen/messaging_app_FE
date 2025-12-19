@@ -45,3 +45,37 @@
     /* Allow children like Channels > .content to shrink and scroll */
     min-height: 0;
 }
+
+.sideBarHeader{
+    width: 100%;
+    height: 3.5rem;
+    background-color: var(--main-color-3);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1.25rem;
+}
+
+.sideBarHeader h4{
+    width:50%;
+}
+
+.createConversationButton{
+    width: 50%;
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 2rem;
+}
+
+.createConversationButton p{
+    transition: color 0.15s ease-in-out, transform 0.15s ease-in-out;
+    color: #979797;
+}
+.createConversationButton p:hover{
+    cursor: pointer;
+    color: white;
+    transform: scale(1.2);
+}

@@ -5,8 +5,13 @@ import { useAuth } from "@/context/AuthContext";
 import Conversation from "@/components/conversation/conversation";
 import {fetchConversations} from "@/services/conversations";
 import ConversationContext from "../../context/ConversationContext";
+import {useRouter} from "next/navigation";
+
+import {logout} from "@/services/auth";
+
 const MainBase = ({children}) => {
     const {user} = useAuth();
+    const router=  useRouter();
 
     const [conversations, setConversations] = useState([]);
     useEffect(() => {
@@ -25,11 +30,25 @@ const MainBase = ({children}) => {
         getConversations();
     },[])
 
+    const handleLogout = () => {
+        logout();
+        console.log("main-base: pushing login");
+        router.push("/login");
+    }
+
   return (
       <>
           <ConversationContext.Provider value={conversations}>
               <div className={Styles.mainBase}>
                   <div className={Styles.sideBar}>
+
+                      <div className={Styles.sideBarHeader}>
+                          <h4>Conversations</h4>
+                          <div className={Styles.createConversationButton}>
+                              <p>+</p>
+                          </div>
+                      </div>
+
                       <div className={Styles.conversationDisplay}>
                           {conversations.map((conversation, index) => (
                               <Conversation name={conversation.conversationName}
@@ -39,7 +58,10 @@ const MainBase = ({children}) => {
                               />
                           ))}
                       </div>
-                      <div className={Styles.userDisplay}>
+                      {/*TODO: MAKE AN ACTUAL LOGOUT BUTTON*/}
+                      <div className={Styles.userDisplay}
+                        onClick={() => handleLogout()}
+                      >
                           {user?.userName}
                       </div>
                   </div>

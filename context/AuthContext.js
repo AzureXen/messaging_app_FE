@@ -24,6 +24,8 @@ export function AuthProvider({ children }) {
                         console.log("Token is invalid or expired. Logging out...");
                         localStorage.removeItem('token');
                         setUser(null);
+                        console.log("auth context: pushing login");
+                        router.push("/login");
                     } else {
                         console.log("Error while running getMe()");
                     }
@@ -38,10 +40,6 @@ export function AuthProvider({ children }) {
 
         initAuth();
     }, []);
-
-    useEffect(() => {
-        console.log("User: ", user);
-    }, [user])
 
     return (
         <AuthContext.Provider value={{ user, setUser, loading }}>
