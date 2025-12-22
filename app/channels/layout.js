@@ -5,6 +5,7 @@ import MainBase from "../../components/main-base/main-base.js";
 import Style from "./layout.module.css"
 import {useAuth} from "@/context/AuthContext";
 import {useRouter} from "next/navigation";
+import CreateConversationModal from "@/components/create-conversation-modal/create-conversation-modal";
 const ChannelsLayout = ({children}) => {
 
     const { user, loading } = useAuth();
@@ -25,6 +26,7 @@ const ChannelsLayout = ({children}) => {
             <MainBase>
                 {children}
             </MainBase>
+            <CreateConversationModal/>
         </div>
     </>
   )

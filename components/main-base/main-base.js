@@ -3,9 +3,10 @@ import React, {useEffect, useState} from 'react'
 import Styles from "./main-base.module.css"
 import { useAuth } from "@/context/AuthContext";
 import Conversation from "@/components/conversation/conversation";
-import {fetchConversations} from "@/services/conversations";
+import { fetchConversations } from "@/services/conversations";
 import ConversationContext from "../../context/ConversationContext";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import CreateConversationModal from "@/components/create-conversation-modal/create-conversation-modal";
 
 import {logout} from "@/services/auth";
 
@@ -14,13 +15,17 @@ const MainBase = ({children}) => {
     const router=  useRouter();
 
     const [conversations, setConversations] = useState([]);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
     useEffect(() => {
         const getConversations = async () => {
             try{
                 console.log("fetching conversations");
                 const response = await fetchConversations();
-                setConversations(response.data);
-                console.log(response);
+                // response may be { data: [...] } or just [...]
+                const list = response?.data ?? response;
+                setConversations(list);
+                console.log("conversations fetched:", list);
             }
             catch(err){
                 console.log("main-base.js: error while fetching conversations");
@@ -44,7 +49,7 @@ const MainBase = ({children}) => {
 
                       <div className={Styles.sideBarHeader}>
                           <h4>Conversations</h4>
-                          <div className={Styles.createConversationButton}>
+                          <div className={Styles.createConversationButton} onClick={() => setShowCreateModal(true)}>
                               <p>+</p>
                           </div>
                       </div>
@@ -78,6 +83,14 @@ const MainBase = ({children}) => {
                   <div className={Styles.mainContent}>
                       {children}
                   </div>
+
+                  <CreateConversationModal
+                    open={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onSuccess={(newConv) => {
+                      setConversations((prev) => [newConv, ...prev]);
+                    }}
+                  />
               </div>
           </ConversationContext.Provider>
       </>

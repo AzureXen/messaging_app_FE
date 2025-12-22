@@ -20,14 +20,6 @@ const Channels = () => {
         (conversation) => conversation.id === conversationId
     )
 
-    useEffect(() => {
-        console.log("current Conversation Id", conversationId);
-    },[conversationId])
-
-    useEffect(() => {
-        console.log("currentConversation", currentConversation);
-    },[currentConversation])
-
     // Auto-scroll
     const messagesEndRef = useRef(null);
 
@@ -47,7 +39,7 @@ const Channels = () => {
             }
         }
         getMessages();
-    }, []);
+    }, [conversationId]);
 
     // Scroll to bottom whenever messages change
     useEffect(() => {
@@ -93,20 +85,21 @@ const Channels = () => {
                 </span>
             </div>
 
-            <div className={Styles.content}>
-                <div className={Styles.messagesBox}>
-                    {allMessages.map((message, index) => (
-                        <MessageBubble
-                            name={message.senderName || "Unknown"}
-                            content={message.content}
-                            datetime={message.createdAt}
-                            key={index}
-                        />
-                    ))}
-                    <div ref={messagesEndRef} />
-                </div>
+            <div className={Styles.contentWrapper}>
+                <div className={Styles.content}>
+                    <div className={Styles.messagesBox}>
+                        {allMessages.map((message, index) => (
+                            <MessageBubble
+                                name={message.senderName || "Unknown"}
+                                content={message.content}
+                                datetime={message.createdAt}
+                                key={index}
+                            />
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </div>
 
-                <div className={Styles.draftBox}>
+                    <div className={Styles.draftBox}>
                     <textarea
                         ref={textareaRef}
                         value={draftMessage}
@@ -117,6 +110,10 @@ const Channels = () => {
                         className={Styles.messageInput}
                         rows={1}
                     />
+                    </div>
+                </div>
+                <div className={Styles.sideContent}>
+                    Friends :]
                 </div>
             </div>
         </div>
