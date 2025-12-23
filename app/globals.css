@@ -2,9 +2,12 @@
   --background: #ffffff;
   --foreground: #171717;
 
+    --main-color-lighter-2: #3c3d43;
+    --main-color-lighter: #37383f;
     --main-color-1: #323338;
     --main-color-2: #2e2f34;
-    --main-color-3: #2c2d32;
+    --main-color-3: #2b2d31;
+    --main-color-darker: #28292d;
     --main-color-4: #5a69f1;
 
     --gradient-4: linear-gradient(

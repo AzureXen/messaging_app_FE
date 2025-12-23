@@ -1,6 +1,9 @@
 .messageBubble{
     padding: 1rem;
-    background-color: #9e9e59;
+    background-color: var(--main-color-2);
+}
+.messageBubble:hover{
+    background-color: var(--main-color-lighter);
 }
 .messageInfo{
     display:flex;

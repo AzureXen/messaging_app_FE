@@ -13,3 +13,12 @@ export const joinViaInvite = async (inviteCode) => {
         console.error("error while creating conversation, full error: ",error);
     }
 };
+
+export const createInvite = async (createInviteRequest) => {
+    try{
+        const response = await api.post(`/invite`, createInviteRequest);
+        return response.data;
+    }catch(error){
+        console.error("error while creating conversation, full error: ",error);
+    }
+};

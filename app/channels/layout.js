@@ -6,6 +6,7 @@ import Style from "./layout.module.css"
 import {useAuth} from "@/context/AuthContext";
 import {useRouter} from "next/navigation";
 import CreateConversationModal from "@/components/create-conversation-modal/create-conversation-modal";
+import { HeaderTitleProvider } from "@/context/HeaderTitleContext";
 const ChannelsLayout = ({children}) => {
 
     const { user, loading } = useAuth();
@@ -21,13 +22,15 @@ const ChannelsLayout = ({children}) => {
     }, [user, loading, router]);
   return (
     <>
-        <div className={Style.channelsLayout}>
-            <MainHeader />
-            <MainBase>
-                {children}
-            </MainBase>
-            <CreateConversationModal/>
-        </div>
+        <HeaderTitleProvider>
+          <div className={Style.channelsLayout}>
+              <MainHeader />
+              <MainBase>
+                  {children}
+              </MainBase>
+              <CreateConversationModal/>
+          </div>
+        </HeaderTitleProvider>
     </>
   )
 }

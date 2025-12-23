@@ -11,10 +11,11 @@
 .sideBar{
     width: 18rem;
     height: auto;
-    background-color: blue;
+    background-color: var(--main-color-darker);
     display:flex;
     flex-direction: column;
     justify-content: flex-start;
+    border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 .conversationDisplay{
@@ -24,13 +25,14 @@
 .userDisplay{
     box-sizing: border-box;
     height: 3.7rem;
-    background-color: red;
+    background-color: var(--main-color-1);
     margin: 0.5rem;
-    border-radius: 5px;
+    border-radius: 8px;
     display:flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .sideBarExtend{
@@ -52,9 +54,10 @@
     background-color: var(--main-color-3);
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    padding: 1.25rem;
+    padding: 0 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .sideBarHeader h4{

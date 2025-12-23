@@ -13,3 +13,12 @@ export const createConversation = async (conversationName) => {
         console.error("error while creating conversation, full error: ",error);
     }
 };
+
+export const fetchConversationMembers = async (conversationId) => {
+    try{
+        const response = await api.get(`/members/${conversationId}`);
+        return response.data;
+    }catch(error){
+        console.error("error while creating conversation, full error: ",error);
+    }
+};

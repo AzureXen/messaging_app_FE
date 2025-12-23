@@ -3,7 +3,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    /* Let header/content work within parent's height */
+
     min-height: 0;
 }
 .header{
@@ -12,10 +12,141 @@
     background-color: var(--main-color-2);
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    padding: 1.25rem;
+    padding: 0 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
+.headerLeft{ display:flex; align-items:center; gap: 0.5rem; font-weight:600; }
+.headerLeft span{ font-weight: 500; }
+.headerRight{ display:flex; align-items:center; gap: 0.5rem; }
+.headerLeft{ display:flex; align-items:center; gap: 0.5rem; }
+.headerRight{ display:flex; align-items:center; gap: 0.5rem; }
+.iconButton{
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #e7ecff;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 3rem;
+}
+.iconButton:hover{ background: rgba(255,255,255,0.08); }
+.iconButton:active{ transform: translateY(1px); }
+
+.iconImage{
+    width: 100%;
+    height: 100%;
+}
+
+/* Invite Modal Styles (Discord-like) */
+.inviteModalBackdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+}
+.inviteModal{
+    width: 92%;
+    max-width: 520px;
+    background: var(--main-color-1);
+    color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    overflow: hidden;
+}
+.inviteHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.inviteHeader h3{
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.modalCloseBtn{
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: #b5bac1;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.modalCloseBtn:hover{ background: rgba(255,255,255,0.08); color: #fff; }
+
+.inviteBody{
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.inputRow{
+    display: flex;
+    gap: 8px;
+}
+.inviteInput{
+    flex: 1;
+    background: #1e1f22;
+    border: 1px solid #3b3f45;
+    color: #e7ecff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    outline: none;
+}
+.inviteInput:focus{ border-color: #5865f2; box-shadow: 0 0 0 3px rgba(88,101,242,0.25); }
+.copyBtn{
+    background: #5865f2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    padding: 0 12px;
+    cursor: pointer;
+}
+.copyBtn:disabled{ opacity: 0.6; cursor: not-allowed; }
+.helperText{ color: #b5bac1; font-size: 0.85rem; margin: 0; }
+.copySuccessText{
+    color: var(--main-color-4);
+    font-size: 0.85rem;
+    margin: 0;
+}
+.inviteFooter{
+    padding: 12px 16px 16px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+.secondaryBtn{
+    background: #4f545c;
+    color: #e7ecff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+.secondaryBtn:hover{ filter: brightness(1.05); }
+.primaryBtn{
+    background: #5865f2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.primaryBtn:disabled{ opacity: 0.6; cursor: not-allowed; }
+
 .contentWrapper{
     flex:1;
     display:flex;
@@ -25,24 +156,48 @@
 }
 .content{
     box-sizing: border-box;
-    background-color: green;
+    background-color: var(--main-color-2);
     flex: 1;
     display:flex;
     flex-direction: column;
     justify-content: flex-start;
     /* Critical: allow flex children to shrink and enable scrolling descendants */
     min-height: 0;
+    border-right: 1px solid rgba(255,255,255,0.06);
 }
 
 .sideContent{
     width: 17rem;
+    background: var(--main-color-lighter-2);
+    border-left: 1px solid rgba(255,255,255,0.06);
+    padding: 0.75rem;
+    box-sizing: border-box;
 }
+.membersPanel{ display:flex; flex-direction: column; gap: 0.5rem; }
+.section{ display:flex; flex-direction: column; gap: 0.4rem; }
+.sectionHeader{
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9aa4c6;
+    margin: 0.25rem 0;
+}
+.memberList{ list-style: none; padding: 0; margin: 0; display:flex; flex-direction: column; gap: 0.25rem; }
+.memberItem{ display:flex; align-items:center; justify-content: flex-start; padding: 0.25rem 0.35rem; border-radius: 6px; }
+.memberItem:hover{ background: rgba(255,255,255,0.04); }
+.userName{ color: #e7ecff; font-size: 0.95rem; }
+.roleTag{ color: #aab3d6; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.08); padding: 0 6px; border-radius: 999px; }
+.emptyState{ color: #aab3d6; font-size: 0.9rem; opacity: 0.85; }
 
 .messagesBox{
     flex: 1;
     width: 100%;
     overflow-y: auto;
     min-height: 0;
+    padding: 0.75rem;
+    display:flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .draftBox{
@@ -53,12 +208,13 @@
     height: auto;
     min-height: 3.7rem;
     max-height: 23rem;
-    background-color: var(--main-color-1);
+    background-color: var(--main-color-lighter);
     border-radius: 0.5rem;
-    margin: 0.35rem;
-    padding: 0.75rem;
+    margin: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(255,255,255,0.06);
 }
-.draftBox textarea{
+.messageInput{
     font-size: 1rem;
     width: 100%;
 
@@ -76,7 +232,34 @@
 }
 
 
-.draftBox textarea:focus{
+.messageInput::placeholder{ color: rgba(154, 164, 198, 0.39); }
+.messageInput:focus{
     outline: none;
     box-shadow: none;
+}
+
+/* Styled scrollbars for the messages list */
+/* Firefox */
+.messagesBox{
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.28) transparent;
+}
+/* WebKit-based browsers (Chrome, Edge, Safari) */
+.messagesBox::-webkit-scrollbar{
+    width: 10px;
+}
+.messagesBox::-webkit-scrollbar-track{
+    background: transparent;
+}
+.messagesBox::-webkit-scrollbar-thumb{
+    background-color: rgba(255,255,255,0.22);
+    border-radius: 8px;
+    border: 2px solid transparent; /* creates a gutter */
+    background-clip: padding-box;
+}
+.messagesBox:hover::-webkit-scrollbar-thumb{
+    background-color: rgba(255,255,255,0.35);
+}
+.messagesBox::-webkit-scrollbar-thumb:active{
+    background-color: #5865f2; /* Discord "blurple" accent on drag */
 }
