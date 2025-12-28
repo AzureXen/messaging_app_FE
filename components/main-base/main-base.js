@@ -28,7 +28,6 @@ const MainBase = ({children}) => {
 
         const getConversations = async () => {
             try{
-                console.log("fetching conversations");
                 const filterRules = {
                     "All": null,
                     "Group": true,
@@ -36,13 +35,10 @@ const MainBase = ({children}) => {
                 };
                 const isGroupParam = filterRules[conversationFilter] ?? null;
 
-                console.log(isGroupParam);
-
                 const response = await fetchConversations(isGroupParam);
 
                 const list = response?.data ?? response;
                 setConversations(list);
-                console.log("conversations fetched:", list);
             }
             catch(err){
                 console.log("main-base.js: error while fetching conversations");

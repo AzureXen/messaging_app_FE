@@ -7,7 +7,7 @@ import { fetchMessages } from "@/services/messages";
 import { useWebSocket } from '@/hooks/useWebsocket';
 import {useConversations} from "@/context/ConversationContext";
 import {useParams, useRouter} from "next/navigation";
-import {fetchConversationMembers} from "@/services/conversations";
+import {fetchConversationMembers, fetchIsMember} from "@/services/conversations";
 import membersIcon from "@/public/members.png";
 import Image from "next/image";
 import {createInvite} from "@/services/invites";
@@ -16,15 +16,14 @@ import {useAuth} from "@/context/AuthContext";
 const Channels = () => {
 
     const router = useRouter();
+    
+    const [fetchedIsMember, setFetchedIsMember] = useState(false);
+    const [isMember, setIsMember] = useState(false);
 
     const {user, loading} = useAuth();
 
     const conversationId = Number(useParams().channelCode);
     const lastConversationIdRef = useRef(null);
-
-    useEffect(() => {
-        console.log(conversationId);
-    }, [conversationId]);
 
     const [historyMessages, setHistoryMessages] = useState([]);
     const [draftMessage, setDraftMessage] = useState('');
@@ -33,10 +32,7 @@ const Channels = () => {
     const allConversations = useConversations();
 
     const currentConversationRef = useRef(null);
-
-    // const currentConversation = allConversations?.find(
-    //     (conversation) => conversation.id === conversationId
-    // )
+    
 
     const [displayingConversations, setDisplayingConversations] = useState([]);
 
@@ -70,6 +66,29 @@ const Channels = () => {
         }
     }
 
+    useEffect(()=>{
+        const getIsMember = async () => {
+            try{
+                const response = await fetchIsMember(conversationId);
+                setIsMember(response.data);
+                setFetchedIsMember(true);
+            }catch(ermWhatTheSigma){
+                console.error("error while getting isMember, ", ermWhatTheSigma)
+            }
+        }
+        getIsMember();
+    },[conversationId, user])
+
+    // TODO: make an error page where user try to access a server that they dont belong
+    useEffect(()=>{
+        if(fetchedIsMember){
+            if(!isMember){
+                console.warn("user does not belong to this conversation, pushing out.");
+                router.push("/channels")
+            }
+        }
+    },[fetchedIsMember, isMember, router])
+    
     useEffect(() => {
         const currentConversation = currentConversationRef.current;
         if (currentConversation) {
@@ -94,7 +113,6 @@ const Channels = () => {
         const getMessages = async () => {
             try{
                 const response = await fetchMessages(conversationId);
-                console.log("Fetched history:", response);
                 setHistoryMessages(response.data);
             } catch(e) {
                 console.error("Error fetching history:", e);
@@ -104,7 +122,6 @@ const Channels = () => {
         const getMembers = async () =>{
             try{
                 const response = await fetchConversationMembers(conversationId);
-                console.log("Fetched members:", response);
                 setMembers(response.data);
             }
             catch(e) {
@@ -121,6 +138,10 @@ const Channels = () => {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [allMessages]);
+
+
+    
+    
 
     const handleSendMessage = async () => {
         if (draftMessage.trim() === '') return;
@@ -147,7 +168,6 @@ const Channels = () => {
             textarea.style.height = `${textarea.scrollHeight}px`;
         }
     };
-
     useEffect(() => {
         adjustTextareaHeight();
     }, [draftMessage]);

@@ -22,7 +22,6 @@ export const useWebSocket = (conversationId) => {
             // If you use SockJS, you often need a factory:
             webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
 
-            // 🛑 THE PROSTHETIC HEADER (The Secret Sauce)
             connectHeaders: {
                 Authorization: `Bearer ${token}`
             },

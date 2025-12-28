@@ -26,6 +26,15 @@ export const fetchConversationMembers = async (conversationId) => {
         const response = await api.get(`/members/${conversationId}`);
         return response.data;
     }catch(error){
-        console.error("error while creating conversation, full error: ",error);
+        console.error("error while fetching conversation, full error: ",error);
+    }
+};
+
+export const fetchIsMember = async (conversationId) => {
+    try{
+        const response = await api.get(`/members/${conversationId}/me`);
+        return response.data;
+    }catch(error){
+        console.error("error while fetching isMember, full error: ",error);
     }
 };
