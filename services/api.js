@@ -11,8 +11,17 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        // Guard against SSR where localStorage is not available
+        let token = null;
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+            try {
+                token = localStorage.getItem('token');
+            } catch (_) {
+                // Access to localStorage can fail in some environments; ignore
+            }
+        }
         if (token) {
+            config.headers = config.headers || {};
             config.headers.Authorization = `Bearer ${token}`;
         } else {
             // No token present; allow public requests

@@ -6,7 +6,7 @@ export const fetchMessages = async (conversationId) => {
 };
 
 export const createMessage = async (conversationId, content, messageType) => {
-    const response = await api.post(`messages`, {
+    const response = await api.post(`/messages`, {
         conversationId: conversationId,
         content: content,
         messageType: messageType,

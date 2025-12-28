@@ -1,0 +1,78 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--main-color-2, #1f1f1f);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  width: 360px;
+  max-width: 92vw;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.header {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-weight: 600;
+}
+
+.body {
+  padding: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 16px 16px 16px;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--main-color-1, #2a2a2a);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn:hover { filter: brightness(1.1); }
+
+.btnPrimary {
+  background: #d94848;
+  border-color: #d94848;
+}
+
+.userInfo{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.userInfoBlock{
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+.userInfo span{
+    display:flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+.revealEmail{
+    font-size: 0.9rem;
+    color: var(--main-color-4);
+}
+.revealEmail:hover{
+    color: var(--main-color-5);
+    cursor: pointer;
+}

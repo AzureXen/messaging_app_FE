@@ -7,22 +7,39 @@ import { fetchConversations } from "@/services/conversations";
 import ConversationContext from "../../context/ConversationContext";
 import { useRouter } from "next/navigation";
 import CreateConversationModal from "@/components/create-conversation-modal/create-conversation-modal";
+import UserMenuModal from "@/components/user-menu-modal/user-menu-modal";
 
 import {logout} from "@/services/auth";
 
 const MainBase = ({children}) => {
-    const {user} = useAuth();
+    const {user, loading} = useAuth();
     const router=  useRouter();
 
     const [conversations, setConversations] = useState([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [conversationFilter, setConversationFilter] = useState('All');
 
     useEffect(() => {
+
+        if(loading || user==null){
+            return;
+        }
+
         const getConversations = async () => {
             try{
                 console.log("fetching conversations");
-                const response = await fetchConversations();
-                // response may be { data: [...] } or just [...]
+                const filterRules = {
+                    "All": null,
+                    "Group": true,
+                    "Direct": false,
+                };
+                const isGroupParam = filterRules[conversationFilter] ?? null;
+
+                console.log(isGroupParam);
+
+                const response = await fetchConversations(isGroupParam);
+
                 const list = response?.data ?? response;
                 setConversations(list);
                 console.log("conversations fetched:", list);
@@ -33,7 +50,7 @@ const MainBase = ({children}) => {
             }
         }
         getConversations();
-    },[])
+    },[loading, user, conversationFilter]);
 
     const handleLogout = () => {
         logout();
@@ -46,34 +63,82 @@ const MainBase = ({children}) => {
           <ConversationContext.Provider value={conversations}>
               <div className={Styles.mainBase}>
                   <div className={Styles.sideBar}>
-
+                      <div
+                        className={Styles.topIcon}
+                        title="Friends"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => router.push('/channels/friends')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            router.push('/channels/friends');
+                          }
+                        }}
+                      >
+                        <img src="/globe.svg" alt="Friends" />
+                      </div>
                       <div className={Styles.sideBarHeader}>
-                          <h4>Conversations</h4>
+                          <div className={Styles.sideBarHeaderLeft}>
+                              <h4>Conversations</h4>
+                              <select
+                                aria-label="Conversation filter"
+                                className={Styles.filterSelect}
+                                value={conversationFilter}
+                                onChange={(e) => setConversationFilter(e.target.value)}
+                              >
+                                <option value="All">All</option>
+                                <option value="Group">Group</option>
+                                <option value="Direct">Direct</option>
+                              </select>
+                          </div>
                           <div className={Styles.createConversationButton} onClick={() => setShowCreateModal(true)}>
                               <p>+</p>
                           </div>
                       </div>
 
                       <div className={Styles.conversationDisplay}>
-                          {conversations.map((conversation, index) => (
-                              <Conversation name={conversation.conversationName}
-                                            id={conversation.id}
-                                            key={index}
-                                            lastMessage={conversation.lastMessage?.content}
-                              />
-                          ))}
+                          {conversations.map((conversation, index) =>{
+                              let conversationName;
+                              if(conversation.isGroup){
+                                  conversationName = conversation.conversationName;
+                              }else{
+                                  if(conversation.members[0].userName === user.userName){
+                                      conversationName = conversation.members[1].userName;
+                                  }
+                                  else conversationName = conversation.members[0].userName;
+                              }
+                              return (
+                                  <Conversation name={conversationName}
+                                                id={conversation.id}
+                                                key={index}
+                                                lastMessage={conversation.lastMessage?.content}
+                                  />
+                              )
+                              }
+
+                          )}
                       </div>
-                      {/*TODO: MAKE AN ACTUAL LOGOUT BUTTON*/}
+                      {/* Open user menu modal on click */}
                       <div className={Styles.userDisplay}
-                        onClick={() => handleLogout()}
+                        onClick={() => setShowUserMenu(true)}
+                        title="Account"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setShowUserMenu(true);
+                          }
+                        }}
                       >
-                          {user?.userName}
+                          {user?.displayName}
                       </div>
                   </div>
 
                   {/*
             This is suppose to be the second sidebar on the left like on Discord
-            Where it contains direct messages. but right now i just wanna show all types of Conversations
+            Where it contains me messages. but right now i just wanna show all types of Conversations
             On the "Group" Side bar
             */}
                   {/*<div className={Styles.sideBarExtend}>*/}
@@ -90,6 +155,16 @@ const MainBase = ({children}) => {
                     onSuccess={(newConv) => {
                       setConversations((prev) => [newConv, ...prev]);
                     }}
+                  />
+
+                  <UserMenuModal
+                    open={showUserMenu}
+                    onClose={() => setShowUserMenu(false)}
+                    onLogout={() => {
+                      setShowUserMenu(false);
+                      handleLogout();
+                    }}
+                    user={user}
                   />
               </div>
           </ConversationContext.Provider>

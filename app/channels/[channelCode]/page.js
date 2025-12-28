@@ -6,24 +6,39 @@ import MessageBubble from "@/components/small-components/message-bubble/message-
 import { fetchMessages } from "@/services/messages";
 import { useWebSocket } from '@/hooks/useWebsocket';
 import {useConversations} from "@/context/ConversationContext";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {fetchConversationMembers} from "@/services/conversations";
 import membersIcon from "@/public/members.png";
 import Image from "next/image";
 import {createInvite} from "@/services/invites";
+import {useAuth} from "@/context/AuthContext";
 
 const Channels = () => {
 
-    const conversationId = Number(useParams().channels);
+    const router = useRouter();
+
+    const {user, loading} = useAuth();
+
+    const conversationId = Number(useParams().channelCode);
+    const lastConversationIdRef = useRef(null);
+
+    useEffect(() => {
+        console.log(conversationId);
+    }, [conversationId]);
 
     const [historyMessages, setHistoryMessages] = useState([]);
     const [draftMessage, setDraftMessage] = useState('');
     const textareaRef = useRef(null);
 
     const allConversations = useConversations();
-    const currentConversation = allConversations?.find(
-        (conversation) => conversation.id === conversationId
-    )
+
+    const currentConversationRef = useRef(null);
+
+    // const currentConversation = allConversations?.find(
+    //     (conversation) => conversation.id === conversationId
+    // )
+
+    const [displayingConversations, setDisplayingConversations] = useState([]);
 
     const [members, setMembers] = useState(null);
     const [showMembers, setShowMembers] = useState(true);
@@ -45,18 +60,37 @@ const Channels = () => {
 
     const { setTitle } = useHeaderTitle();
 
-    useEffect(() => {
-        // Update header title when conversation changes
-        if (currentConversation?.conversationName) {
-            setTitle(`# ${currentConversation.conversationName}`);
+    // I know, it's an error, but it works ...fine i think?
+
+    if (lastConversationIdRef.current !== conversationId) {
+        const found = allConversations?.find((c) => c.id === Number(conversationId));
+        if (found) {
+            currentConversationRef.current = found;
+            lastConversationIdRef.current = conversationId;
         }
-        return () => {
-            // Optional: reset title when leaving
-            setTitle('Header');
-        };
-    }, [currentConversation?.conversationName, setTitle]);
+    }
 
     useEffect(() => {
+        const currentConversation = currentConversationRef.current;
+        if (currentConversation) {
+            const newTitle = currentConversation.isGroup
+                ? `# ${currentConversation.conversationName}`
+                : `# ${currentConversation.members[0].userName === user.userName ? currentConversation.members[1].userName : currentConversation.members[0].userName}`;
+            // Only update if changed to avoid cascading renders
+            setTitle((prev) => (prev === newTitle ? prev : newTitle));
+        }
+        return () => {
+            setTitle(':)');
+        };
+        // Only react to channel changes; we intentionally ignore allConversations changes
+    }, [conversationId, setTitle, user]);
+
+    useEffect(() => {
+
+        if(loading || user==null){
+            return;
+        }
+
         const getMessages = async () => {
             try{
                 const response = await fetchMessages(conversationId);
@@ -80,7 +114,7 @@ const Channels = () => {
 
         getMessages();
         getMembers();
-    }, [conversationId]);
+    }, [conversationId, loading, user]);
 
 
     // Scroll to bottom whenever messages change
@@ -163,7 +197,7 @@ const Channels = () => {
         <div className={Styles.channels}>
             <div className={Styles.header}>
                 <div className={Styles.headerLeft}>
-                    # {currentConversation?.conversationName}
+                    # {currentConversationRef.current?.conversationName}
                     <span style={{ fontSize: '0.8em', marginLeft: '10px', color: isConnected ? '#4caf50' : '#f44336' }}>
                         {isConnected ? '● Connected' : '○ Connecting...'}
                     </span>
@@ -211,7 +245,7 @@ const Channels = () => {
                         value={draftMessage}
                         onChange={(e) => setDraftMessage(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={isConnected ? `Send message to #${currentConversation?.conversationName}` : "Connecting..."}
+                        placeholder={isConnected ? `Send message to #${currentConversationRef.current?.conversationName}` : "Connecting..."}
                         disabled={!isConnected}
                         className={Styles.messageInput}
                         rows={1}
@@ -265,7 +299,7 @@ const Channels = () => {
                 }}>
                     <div className={Styles.inviteModal} role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
                         <div className={Styles.inviteHeader}>
-                            <h3 id="inviteTitle">Invite friends to #{currentConversation?.conversationName}</h3>
+                            <h3 id="inviteTitle">Invite friends to #{currentConversationRef.current?.conversationName}</h3>
                             <button className={Styles.modalCloseBtn} aria-label="Close" onClick={() => setShowInviteModal(false)}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4Z"/></svg>
                             </button>

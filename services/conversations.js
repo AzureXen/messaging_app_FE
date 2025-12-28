@@ -1,8 +1,15 @@
 import api from './api';
 
-export const fetchConversations = async () => {
-    const response = await api.get(`/conversations`);
-    return response.data;
+export const fetchConversations = async (type) => {
+    if(type !== null){
+        const response = await api.get(`/conversations?isGroup=${type}`);
+        return response.data;
+    }
+    else{
+        const response = await api.get(`/conversations`);
+        return response.data;
+    }
+
 };
 
 export const createConversation = async (conversationName) => {

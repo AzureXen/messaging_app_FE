@@ -1,6 +1,6 @@
 .conversation {
     box-sizing: border-box;
-    padding: 1rem;
+    padding: 0.5rem;
     width: 100%;
     height: 3.5rem;
     background-color: var(--main-color-2);
@@ -8,9 +8,20 @@
     flex-direction: column;
     justify-content: center;
     color: white;
+    gap: 0.15rem;
+    min-width: 0; /* allow children to shrink for ellipsis */
 }
 
 .conversation:hover {
     background-color: var(--main-color-lighter);
     cursor: pointer;
+}
+
+/* Ellipsis for title and last message */
+.conversation h3,
+.conversation p {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

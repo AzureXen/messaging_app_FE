@@ -34,7 +34,6 @@ export default function LoginPage() {
         try {
             const data = await login(formData);
             const token = data?.token ?? data?.data?.token;
-            console.log("token from login response:", token, "raw response:", data);
 
             if (!token) {
                 throw new Error('Login response missing token');

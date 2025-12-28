@@ -13,7 +13,7 @@ export const useWebSocket = (conversationId) => {
         const token = localStorage.getItem("token"); // Make sure key matches your login logic!
 
         if (!token) {
-            console.error("❌ No JWT found. Cannot connect.");
+            console.warn("No JWT found. Cannot connect.");
             return;
         }
 

@@ -16,10 +16,18 @@
     flex-direction: column;
     justify-content: flex-start;
     border-right: 1px solid rgba(255,255,255,0.06);
+    min-height: 0; /* allow internal scroll areas */
 }
 
 .conversationDisplay{
     flex:1;
+    overflow-y: auto; /* scroll conversations if too many */
+    min-height: 0;
+
+    /* Match messages scrollbar styling */
+    /* Firefox */
+    scrollbar-width: none;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
 
 .userDisplay{
@@ -48,6 +56,37 @@
     min-height: 0;
 }
 
+.topIcon{
+    width: 48px;
+    height: 48px;
+    margin: 0.75rem 0.75rem 0.5rem 0.75rem;
+    border-radius: 12px; /* square-like with slight rounding */
+    background: var(--main-color-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 160ms ease;
+}
+.topIcon:hover,
+.topIcon:focus-visible{
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+.topIcon:active{
+    transform: scale(0.96);
+}
+.topIcon img{
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    border-radius: 8px;
+    pointer-events: none;
+    filter: brightness(0.92);
+}
+
 .sideBarHeader{
     width: 100%;
     height: 3.5rem;
@@ -61,7 +100,26 @@
 }
 
 .sideBarHeader h4{
-    width:50%;
+    margin: 0;
+}
+
+.sideBarHeaderLeft{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filterSelect{
+    background-color: var(--main-color-1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    outline: none;
+}
+.filterSelect:focus{
+    border-color: rgba(255,255,255,0.35);
 }
 
 .createConversationButton{

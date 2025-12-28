@@ -9,15 +9,12 @@ export const login = async (credentials) => {
 export const getMe = async () => {
     const response = await api.get('/users/profile');
     const normalized = response?.data?.data ?? response?.data ?? response;
-    console.log("getMe normalized:", normalized);
     return normalized;
 };
 
 export const register = async (data) => {
-    console.log("registering with data: ", data);
     try {
         const response = await api.post('/auth/register', data);
-        console.log("register success:", response.data);
         return response.data;
     } catch (error) {
         console.error("full error: ", error);

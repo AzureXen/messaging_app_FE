@@ -163,6 +163,8 @@
     justify-content: flex-start;
     /* Critical: allow flex children to shrink and enable scrolling descendants */
     min-height: 0;
+    /* Important: allow this flex item to shrink and not overflow on long words */
+    min-width: 0;
     border-right: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -194,10 +196,15 @@
     width: 100%;
     overflow-y: auto;
     min-height: 0;
+    /* Also ensure horizontal shrink allowed */
+    min-width: 0;
     padding: 0.75rem;
     display:flex;
     flex-direction: column;
     gap: 0.5rem;
+    /* Guard rails for long unbroken strings */
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .draftBox{
@@ -213,6 +220,7 @@
     margin: 0.5rem;
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(255,255,255,0.06);
+    min-width: 0; /* allow input to shrink */
 }
 .messageInput{
     font-size: 1rem;
@@ -229,6 +237,10 @@
     resize: none;
     text-wrap: wrap;
     display: block;
+
+    /* wrap long words/URLs typed by user */
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 
