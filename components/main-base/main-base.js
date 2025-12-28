@@ -59,20 +59,25 @@ const MainBase = ({children}) => {
           <ConversationContext.Provider value={conversations}>
               <div className={Styles.mainBase}>
                   <div className={Styles.sideBar}>
-                      <div
-                        className={Styles.topIcon}
-                        title="Friends"
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => router.push('/channels/friends')}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            router.push('/channels/friends');
-                          }
-                        }}
-                      >
-                        <img src="/globe.svg" alt="Friends" />
+                      <div className={Styles.aboveHeader}>
+                          <div
+                              className={Styles.topIcon}
+                              title="Friends"
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => router.push('/channels/friends')}
+                              onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      router.push('/channels/friends');
+                                  }
+                              }}
+                          >
+                              <img src="/globe.svg" alt="Friends" />
+                          </div>
+                          <div className={Styles.dihhCord}>
+                              Dihhcord 🥀🥀
+                          </div>
                       </div>
                       <div className={Styles.sideBarHeader}>
                           <div className={Styles.sideBarHeaderLeft}>

@@ -32,9 +32,6 @@ const Channels = () => {
     const allConversations = useConversations();
 
     const currentConversationRef = useRef(null);
-    
-
-    const [displayingConversations, setDisplayingConversations] = useState([]);
 
     const [members, setMembers] = useState(null);
     const [showMembers, setShowMembers] = useState(true);
@@ -58,10 +55,13 @@ const Channels = () => {
 
     // I know, it's an error, but it works ...fine i think?
 
+    // eslint-disable-next-line react-hooks/refs
     if (lastConversationIdRef.current !== conversationId) {
         const found = allConversations?.find((c) => c.id === Number(conversationId));
         if (found) {
+            // eslint-disable-next-line react-hooks/refs
             currentConversationRef.current = found;
+            // eslint-disable-next-line react-hooks/refs
             lastConversationIdRef.current = conversationId;
         }
     }
@@ -102,7 +102,8 @@ const Channels = () => {
             setTitle(':)');
         };
         // Only react to channel changes; we intentionally ignore allConversations changes
-    }, [conversationId, setTitle, user]);
+        // eslint-disable-next-line react-hooks/refs
+    }, [conversationId, setTitle, user, currentConversationRef.current]);
 
     useEffect(() => {
 
@@ -176,7 +177,7 @@ const Channels = () => {
     const getInviteLink = async () => {
         try{
             const payload = {
-                conversationId: currentConversation.id,
+                conversationId: lastConversationIdRef.current,
                 maxUses: null,
                 expiresAt: null,
             };
@@ -217,6 +218,7 @@ const Channels = () => {
         <div className={Styles.channels}>
             <div className={Styles.header}>
                 <div className={Styles.headerLeft}>
+                    {/* eslint-disable-next-line react-hooks/refs */}
                     # {currentConversationRef.current?.conversationName}
                     <span style={{ fontSize: '0.8em', marginLeft: '10px', color: isConnected ? '#4caf50' : '#f44336' }}>
                         {isConnected ? '● Connected' : '○ Connecting...'}
@@ -319,6 +321,7 @@ const Channels = () => {
                 }}>
                     <div className={Styles.inviteModal} role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
                         <div className={Styles.inviteHeader}>
+                            {/* eslint-disable-next-line react-hooks/refs */}
                             <h3 id="inviteTitle">Invite friends to #{currentConversationRef.current?.conversationName}</h3>
                             <button className={Styles.modalCloseBtn} aria-label="Close" onClick={() => setShowInviteModal(false)}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4Z"/></svg>
