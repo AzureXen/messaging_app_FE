@@ -2,8 +2,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Styles from './page.module.css';
 import { useHeaderTitle } from '@/context/HeaderTitleContext';
-import {fetchAllPendings, findUserByNameAndCode, sendFriendRequest} from "@/services/userRelationships";
+import {
+    acceptFriendRequest, cancelFriendRequest,
+    fetchAllFriends,
+    fetchAllPendings,
+    fetchAllReceivedRequests,
+    findUserByNameAndCode, rejectFriendRequest,
+    sendFriendRequest, unfriendUser
+} from "@/services/userRelationships";
 import {useAuth} from "@/context/AuthContext";
+
+import {toast} from 'react-toastify';
 
 const FriendsPage = () => {
   const { setTitle } = useHeaderTitle();
@@ -45,8 +54,45 @@ const FriendsPage = () => {
           }
       }
 
-    fetchPendings();
-  },[user,loading])
+      if(activeTab === 'pending'){
+          fetchPendings();
+      }
+  },[user,loading, activeTab]);
+
+  useEffect(() => {
+      const fetchPendings = async () => {
+          try{
+              const response = await fetchAllPendings();
+              console.log("fetched pendings response: ", response);
+              setPending(response.data);
+          }catch(ermWhatTheSigma){
+              console.error("error while fetching pendings ", ermWhatTheSigma);
+          }
+      }
+      fetchPendings();
+
+      const fetchReceivedRequests = async () => {
+          try{
+              const response = await fetchAllReceivedRequests();
+              console.log("fetched received requests response: ", response);
+              setRequests(response.data);
+          }catch(ermWhatTheSigma){
+              console.error("error while fetching received requests ", ermWhatTheSigma);
+          }
+      }
+      fetchReceivedRequests();
+
+      const fetchFriends = async () => {
+          try{
+              const response = await fetchAllFriends();
+              console.log("fetched received requests response: ", response);
+              setAllFriends(response.data);
+          }catch(ermWhatTheSigma){
+              console.error("error while fetching received requests ", ermWhatTheSigma);
+          }
+      }
+      fetchFriends();
+  },[])
 
   const showAll = allFriends.length > 0;
   const showPending = pending.length > 0;
@@ -61,37 +107,154 @@ const FriendsPage = () => {
   ], [showAll, showPending, showRequests]);
 
   const handleSearchUser = async ()=>{
+      if(searchQuery === ""){ return; }
       if(!firstSearchSent){
           setFirstSearchSent(true);
       }
-      console.log("searching for: " , searchQuery);
 
       const parsedSearchQuery = searchQuery.replaceAll("#", "%23");
 
-      console.log("parsedSearchQuery", parsedSearchQuery);
 
       try{
           const response = await findUserByNameAndCode(parsedSearchQuery);
-          console.log("response of search user: ", response);
           setSearchResults(response.data);
       }catch(ermWhatTheSigma){
           console.error("error while performing user search: ", ermWhatTheSigma);
       }
   }
 
+    const handleAcceptFriendRequest = async (userId)=>{
+        const payload = {
+            receiverId: userId,
+        }
+
+        try{
+            await acceptFriendRequest(payload);
+            toast.success("Accepted friend request!");
+            const fetchReceivedRequests = async () => {
+                try{
+                    const response = await fetchAllReceivedRequests();
+                    setRequests(response.data);
+                }catch(ermWhatTheSigma){
+                    console.error("error while fetching received requests ", ermWhatTheSigma);
+                }
+            }
+            fetchReceivedRequests();
+
+            const fetchFriends = async () => {
+                try{
+                    const response = await fetchAllFriends();
+                    setAllFriends(response.data);
+                }catch(ermWhatTheSigma){
+                    console.error("error while fetching received requests ", ermWhatTheSigma);
+                }
+            }
+            fetchFriends();
+
+        }catch(ermWhatTheSigma){
+            console.error("error while accepting friend request ", ermWhatTheSigma);
+            toast.error("Accept friend request error");
+        }
+    }
+
+    const handleRejectFriendRequest = async (userId)=>{
+        const payload = {
+            receiverId: userId,
+        }
+
+        try{
+            await rejectFriendRequest(payload);
+            const fetchReceivedRequests = async () => {
+                try{
+                    const response = await fetchAllReceivedRequests();
+                    setRequests(response.data);
+                }catch(ermWhatTheSigma){
+                    console.error("error while fetching received requests ", ermWhatTheSigma);
+                }
+            }
+            fetchReceivedRequests();
+
+        }catch(ermWhatTheSigma){
+            console.error("error while rejecting friend request ", ermWhatTheSigma);
+            toast.error("Reject friend request error");
+        }
+    }
+
+    const handleCancelFriendRequest = async (userId)=>{
+        const payload = {
+            receiverId: userId,
+        }
+
+        try{
+            await cancelFriendRequest(payload);
+
+            const fetchPendings = async () => {
+                try{
+                    const response = await fetchAllPendings();
+                    console.log("fetched pendings response: ", response);
+                    setPending(response.data);
+                }catch(ermWhatTheSigma){
+                    console.error("error while fetching pendings ", ermWhatTheSigma);
+                }
+            }
+            fetchPendings();
+
+        }catch(ermWhatTheSigma){
+            console.error("error while cancelling friend request ", ermWhatTheSigma);
+            toast.error("Cancel friend request error");
+        }
+    }
+
   const handleSendFriendRequest = async (userId)=>{
       const payload = {
           receiverId: userId
       }
       try{
+          await sendFriendRequest(payload);
+          toast.success("Sent friend request!");
 
-          const response = await sendFriendRequest(payload);
-          console.log("response of sending friend request: ", response);
+          const fetchPendings = async () => {
+              try{
+                  const response = await fetchAllPendings();
+                  console.log("fetched pendings response: ", response);
+                  setPending(response.data);
+              }catch(ermWhatTheSigma){
+                  console.error("error while fetching pendings ", ermWhatTheSigma);
+              }
+          }
+          fetchPendings();
 
       }catch(ermWhatTheSigma){
           console.error("error while sending friend request: ", ermWhatTheSigma);
+          if(ermWhatTheSigma?.response.data.message){
+              toast.warn(ermWhatTheSigma.response.data.message)
+          }
       }
   }
+    const handleUnfriend = async (userId)=>{
+        const payload = {
+            receiverId: userId
+        }
+        try{
+            await unfriendUser(payload);
+
+            const fetchFriends = async () => {
+                try{
+                    const response = await fetchAllFriends();
+                    setAllFriends(response.data);
+                }catch(ermWhatTheSigma){
+                    console.error("error while fetching received requests ", ermWhatTheSigma);
+                }
+            }
+            fetchFriends();
+
+        }catch(ermWhatTheSigma){
+            console.error("error while unfriending: ", ermWhatTheSigma);
+            if(ermWhatTheSigma?.response.data.message){
+                toast.warn(ermWhatTheSigma.response.data.message)
+            }
+        }
+    }
 
   const renderTab = (tab) => {
     if (!tab.visible) return null;
@@ -115,12 +278,40 @@ const FriendsPage = () => {
         <div className={Styles.emptyState}>{emptyText}</div>
       ) : (
         <ul className={Styles.list}>
-          {items.map((u) => (
-            <li key={u.id} className={Styles.listItem}>
+          {items.map((u, index) => (
+            <li key={index} className={Styles.listItem}>
               <span className={Styles.userName} title={u.userName}>{u.userName}</span>
-              {actionLabel && (
-                <button className={Styles.actionBtn} onClick={() => onAction?.(u)}>{actionLabel}</button>
+              {(actionLabel && u.id !== user.id) && (
+                  <>
+                      {actionLabel==='AllFriends' && (
+                          <button
+                              style={{backgroundColor: "#AF002A"}}
+                              className={Styles.actionBtn} onClick={() => handleUnfriend(u.userId)}>Unfriend</button>
+                      )}
+                      {actionLabel==='Send' && (
+                          <button
+                                  className={Styles.actionBtn} onClick={() => onAction?.(u)}>{actionLabel}</button>
+                      )}
+                      {actionLabel==='Requests' && (
+                          <div>
+                              <button
+                                  className={Styles.actionBtn} onClick={() => handleAcceptFriendRequest(u.userId)}>Accept</button>
+                              <button
+                                  style={{backgroundColor: "#AF002A"}}
+                                  className={Styles.actionBtn} onClick={() => handleRejectFriendRequest(u.userId)}>Fuh Naw</button>
+                          </div>
+                      )}
+                      {actionLabel==='Pendings' && (
+                          <button
+                              style={{backgroundColor: "#AF002A"}}
+                              className={Styles.actionBtn} onClick={() => handleCancelFriendRequest(u.userId)}>Cancel</button>
+                      )}
+                  </>
               )}
+                {u.id === user.id && (
+                    <p
+                    >It&#39;s you!</p>
+                )}
             </li>
           ))}
         </ul>
@@ -145,21 +336,21 @@ const FriendsPage = () => {
             <List
               items={allFriends}
               emptyText="You don't have any friends yet."
-              actionLabel={null}
+              actionLabel="AllFriends"
             />
           )}
           {activeTab === 'pending' && (
             <List
               items={pending}
               emptyText="You don't have any pending requests."
-              actionLabel={null}
+              actionLabel="Pendings"
             />
           )}
           {activeTab === 'requests' && (
             <List
               items={requests}
               emptyText="You have no incoming friend requests."
-              actionLabel={null}
+              actionLabel="Requests"
             />
           )}
           {activeTab === 'add' && (

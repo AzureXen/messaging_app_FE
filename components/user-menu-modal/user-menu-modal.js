@@ -29,6 +29,11 @@ const UserMenuModal = ({ open = false, onClose, onLogout, user }) => {
                 </div>
 
                 <div className={Styles.userInfo}>
+                    <h4>User Code:</h4>
+                    <p>#{user.userCode}</p>
+                </div>
+
+                <div className={Styles.userInfo}>
                     <h4>Username:</h4>
                     <p>{user.userName}</p>
                 </div>

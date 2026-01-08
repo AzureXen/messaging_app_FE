@@ -5,22 +5,45 @@ export const findUserByNameAndCode = async (nameAndCode) => {
     return response.data;
 };
 
+export const acceptFriendRequest = async (payload) => {
+    const response = await api.post(`/relationship/accept`, payload);
+    return response.data;
+};
+
+export const cancelFriendRequest = async (payload) => {
+    const response = await api.post(`/relationship/cancel`, payload);
+    return response.data;
+};
+
+export const rejectFriendRequest = async (payload) => {
+    const response = await api.post(`/relationship/reject`, payload);
+    return response.data;
+};
+
+export const unfriendUser = async (payload) => {
+    const response = await api.post(`/relationship/unfriend`, payload);
+    return response.data;
+};
+
 export const fetchAllPendings = async () => {
     const response = await api.get(`/relationship/requests/sent`);
     return response.data;
 };
 
-// this needs a request body with a "receiverId" ;
-export const sendFriendRequest = async (bodyReceiverId, extraHeaders = {}) => {
-    // Ensure exactly { receiverId: number }
-    const receiverId = Number(bodyReceiverId?.receiverId ?? bodyReceiverId?.id ?? bodyReceiverId);
-    if (!Number.isFinite(receiverId)) {
-        throw new Error('sendFriendRequest: receiverId is missing or invalid');
-    }
-    const payload = { receiverId };
-    console.log('sending friend request with payload: ', payload);
+export const fetchAllReceivedRequests = async () => {
+    const response = await api.get(`/relationship/requests/received`);
+    return response.data;
+};
+
+export const fetchAllFriends = async () => {
+    const response = await api.get(`/relationship/friends`);
+    return response.data;
+};
+
+export const sendFriendRequest = async (receiverId) => {
+    console.log('sending friend request with payload: ', receiverId);
     try {
-        const response = await api.post(`/relationship/send`, payload, { headers: { ...extraHeaders } });
+        const response = await api.post(`/relationship/send`, receiverId);
         return response.data;
     } catch (error) {
         if (error?.response) {
