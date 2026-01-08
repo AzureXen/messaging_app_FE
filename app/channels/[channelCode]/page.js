@@ -42,6 +42,7 @@ const Channels = () => {
     const [inviteLink, setInviteLink] = useState("");
     const [firstOpenInviteModal, setFirstOpenInviteModal] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [isRefreshed, setIsRefreshed] = useState(false);
 
     // Auto-scroll
     const messagesEndRef = useRef(null);
@@ -184,6 +185,12 @@ const Channels = () => {
             const response = await createInvite(payload);
             console.log("Fetched invite:", response);
             setInviteLink(response.data.link);
+            
+            // Show success message for refresh
+            setIsRefreshed(true);
+            setTimeout(() => {
+                setIsRefreshed(false);
+            }, 3000);
         }catch(e) {
             console.error("Error fetching invite link:", e);
         }
@@ -344,11 +351,19 @@ const Channels = () => {
                                     Copied invite link!
                                 </p>
                             )}
+                            {isRefreshed && (
+                                <p className={Styles.refreshSuccessText}>
+                                    Refreshed Link Successfully!
+                                </p>
+                            )}
                             <p className={Styles.helperText}>Invite all your fellas.</p>
                         </div>
                         <div className={Styles.inviteFooter}>
                             <button className={Styles.secondaryBtn} onClick={() => setShowInviteModal(false)}>Close</button>
-                            <button className={Styles.primaryBtn} disabled title="Generate new link (to be implemented)">Generate New Link</button>
+                            <button className={Styles.primaryBtn}
+                                    title="Generate new link"
+                                    onClick={() => getInviteLink()}
+                            >Generate New Link</button>
                         </div>
                     </div>
                 </div>

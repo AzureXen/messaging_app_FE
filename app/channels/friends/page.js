@@ -2,10 +2,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Styles from './page.module.css';
 import { useHeaderTitle } from '@/context/HeaderTitleContext';
+import {fetchAllPendings, findUserByNameAndCode, sendFriendRequest} from "@/services/userRelationships";
+import {useAuth} from "@/context/AuthContext";
 
-// NOTE: Data fetching not implemented. You can wire your services and set these states.
 const FriendsPage = () => {
   const { setTitle } = useHeaderTitle();
+
+  const { user, loading } = useAuth();
 
   // Tabs: 'friends' (title chip), 'all', 'pending', 'requests', 'add'
   const [activeTab, setActiveTab] = useState('friends');
@@ -15,7 +18,10 @@ const FriendsPage = () => {
   const [pending, setPending] = useState([]); // outgoing requests
   const [requests, setRequests] = useState([]); // incoming requests
 
+
+
   // Add Friend search
+    const [firstSearchSent, setFirstSearchSent] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]); // [{id, userName}]
 
@@ -23,6 +29,24 @@ const FriendsPage = () => {
     setTitle('Friends');
     return () => setTitle('Header');
   }, [setTitle]);
+
+  useEffect(() => {
+    if(loading || user == null){
+        return;
+    }
+
+      const fetchPendings = async () => {
+          try{
+              const response = await fetchAllPendings();
+              console.log("fetched pendings response: ", response);
+              setPending(response.data);
+          }catch(ermWhatTheSigma){
+              console.error("error while fetching pendings ", ermWhatTheSigma);
+          }
+      }
+
+    fetchPendings();
+  },[user,loading])
 
   const showAll = allFriends.length > 0;
   const showPending = pending.length > 0;
@@ -35,6 +59,39 @@ const FriendsPage = () => {
     { key: 'requests', label: 'Requests', visible: showRequests },
     { key: 'add', label: 'Find', visible: true },
   ], [showAll, showPending, showRequests]);
+
+  const handleSearchUser = async ()=>{
+      if(!firstSearchSent){
+          setFirstSearchSent(true);
+      }
+      console.log("searching for: " , searchQuery);
+
+      const parsedSearchQuery = searchQuery.replaceAll("#", "%23");
+
+      console.log("parsedSearchQuery", parsedSearchQuery);
+
+      try{
+          const response = await findUserByNameAndCode(parsedSearchQuery);
+          console.log("response of search user: ", response);
+          setSearchResults(response.data);
+      }catch(ermWhatTheSigma){
+          console.error("error while performing user search: ", ermWhatTheSigma);
+      }
+  }
+
+  const handleSendFriendRequest = async (userId)=>{
+      const payload = {
+          receiverId: userId
+      }
+      try{
+
+          const response = await sendFriendRequest(payload);
+          console.log("response of sending friend request: ", response);
+
+      }catch(ermWhatTheSigma){
+          console.error("error while sending friend request: ", ermWhatTheSigma);
+      }
+  }
 
   const renderTab = (tab) => {
     if (!tab.visible) return null;
@@ -68,42 +125,6 @@ const FriendsPage = () => {
           ))}
         </ul>
       )}
-    </div>
-  );
-
-  const AddFriend = () => (
-    <div className={Styles.addFriendBox}>
-      <div className={Styles.searchRow}>
-        <input
-          className={Styles.searchInput}
-          type="text"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button
-          className={Styles.searchBtn}
-          onClick={() => {
-            // TODO: wire your search service here.
-            // setSearchResults(await searchUsers(searchQuery))
-            console.log('Search for', searchQuery);
-          }}
-        >
-          Search
-        </button>
-      </div>
-
-      <div className={Styles.resultsBox}>
-        <List
-          items={searchResults}
-          emptyText={searchQuery ? 'No users found.' : 'Search for your buddies!'}
-          actionLabel="Send"
-          onAction={(u) => {
-            // TODO: wire your send friend request call here
-            console.log('Send request to', u);
-          }}
-        />
-      </div>
     </div>
   );
 
@@ -141,7 +162,39 @@ const FriendsPage = () => {
               actionLabel={null}
             />
           )}
-          {activeTab === 'add' && <AddFriend />}
+          {activeTab === 'add' && (
+              <div className={Styles.addFriendBox}>
+                  <div className={Styles.searchRow}>
+                      <input
+                          className={Styles.searchInput}
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <button
+                          className={Styles.searchBtn}
+                          onClick={() => {
+                              handleSearchUser();
+                          }}
+                      >
+                          Search
+                      </button>
+                  </div>
+
+                  <div className={Styles.resultsBox}>
+                      <List
+                          items={searchResults}
+                          emptyText={(searchQuery&&firstSearchSent) ? 'No users found.' : 'Search for your buddies!'}
+                          actionLabel="Send"
+                          onAction={(u) => {
+                              handleSendFriendRequest(u.id);
+                              console.log('Send request to', u);
+                          }}
+                      />
+                  </div>
+              </div>
+          )}
         </div>
       </div>
     </div>
