@@ -38,3 +38,11 @@ export const fetchIsMember = async (conversationId) => {
         console.error("error while fetching isMember, full error: ",error);
     }
 };
+
+export const findOrCreateDirectMessage = async (userId) => {
+    const payload = {
+        recipientId: userId
+    }
+    const response = await api.post(`/conversations/direct`, payload);
+    return response.data;
+};

@@ -13,6 +13,8 @@ import {
 import {useAuth} from "@/context/AuthContext";
 
 import {toast} from 'react-toastify';
+import {findOrCreateDirectMessage} from "@/services/conversations";
+import {useRouter} from "next/navigation";
 
 const FriendsPage = () => {
   const { setTitle } = useHeaderTitle();
@@ -34,6 +36,7 @@ const FriendsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]); // [{id, userName}]
 
+    const router = useRouter();
   useEffect(() => {
     setTitle('Friends');
     return () => setTitle('Header');
@@ -256,6 +259,27 @@ const FriendsPage = () => {
         }
     }
 
+    const handleChat = async (userId)=>{
+        try{
+            const findOrCreateDM = async () => {
+                try{
+                    const response = await findOrCreateDirectMessage(userId);
+                    router.push(`/channels/${response.data.conversationId}`)
+
+                }catch(ermWhatTheSigma){
+                    console.error("error while finding or creating direct message ", ermWhatTheSigma);
+                }
+            }
+            findOrCreateDM();
+
+        }catch(ermWhatTheSigma){
+            console.error("error while finding or creating chat: ", ermWhatTheSigma);
+            if(ermWhatTheSigma?.response.data.message){
+                toast.warn(ermWhatTheSigma.response.data.message)
+            }
+        }
+    }
+
   const renderTab = (tab) => {
     if (!tab.visible) return null;
     const isActive = activeTab === tab.key;
@@ -283,10 +307,19 @@ const FriendsPage = () => {
               <span className={Styles.userName} title={u.userName}>{u.userName}</span>
               {(actionLabel && u.id !== user.id) && (
                   <>
-                      {actionLabel==='AllFriends' && (
-                          <button
-                              style={{backgroundColor: "#AF002A"}}
-                              className={Styles.actionBtn} onClick={() => handleUnfriend(u.userId)}>Unfriend</button>
+                      {(actionLabel==='AllFriends') && (
+                          <div>
+                              {(u.userName !== "GroqAI") && (
+                                  <button
+                                      style={{backgroundColor: "#AF002A"}}
+                                      className={Styles.actionBtn} onClick={() => handleUnfriend(u.userId)}>Unfriend</button>
+                              )}
+                              <button
+                                  style={{backgroundColor: "#5a69f1"}}
+                                  className={Styles.actionBtn} onClick={() => handleChat(u.userId)}>Chat</button>
+
+                          </div>
+
                       )}
                       {actionLabel==='Send' && (
                           <button
